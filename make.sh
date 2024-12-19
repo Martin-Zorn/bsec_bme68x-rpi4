@@ -35,7 +35,6 @@ fi
 echo 'Compiling...'
 gcc -Wall -Wno-unused-but-set-variable -Wno-unused-variable -static \
   -std=gnu99 \
-  -fpermissive \
   -fcommon \
   -g \
   -I./src/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/src/bme68x \

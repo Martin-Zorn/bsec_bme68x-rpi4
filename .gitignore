@@ -1,4 +1,4 @@
 src/*
-bsec_bme680
+bsec_bme68x
 bsec_iaq.config
 bsec_iaq.state

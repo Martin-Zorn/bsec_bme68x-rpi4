@@ -44,10 +44,10 @@ gcc -Wall -Wno-unused-but-set-variable -Wno-unused-variable -static \
     ./src/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/src/bme68x/bme68x.c \
     ./src/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/src/bme68x/bme68x_defs.h \
     ./src/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/examples/bsec_iot_example/bsec_integration.c \
-    ./bsec_bme680.c \
+    ./bsec_bme68x.c \
   -L"./src/bsec2-6-1-0_generic_release_22102024/algo/bsec_IAQ/bin/RaspberryPi/PiFour_Armv8" -lalgobsec \
   -lm -lrt \
-  -o bsec_bme680
+  -o bsec_bme68x
 echo 'Compiled.'
 
 cp "./src/bsec2-6-1-0_generic_release_22102024/algo/bsec_IAQ/config/bme680/bme680_iaq_33v_3s_4d/bsec_iaq.config" "${CONFIG_DIR}"/

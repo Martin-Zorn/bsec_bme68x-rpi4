@@ -17,7 +17,11 @@
 #include <time.h>
 #include <unistd.h>
 
-int g_i2cFid; // I2C Linux device handle
+/**********************************************************************************************************************/
+/* globals */
+/**********************************************************************************************************************/
+
+int g_i2c_fd;
 int i2c_address = 0x77;
 char *filename_state = "bsec_iaq.state";
 char *filename_config = "bsec_iaq.config";
@@ -32,8 +36,8 @@ uint32_t lastTimeMS;
 // open the Linux device
 void i2cOpen()
 {
-    g_i2cFid = open("/dev/i2c-1", O_RDWR);
-    if (g_i2cFid < 0)
+    g_i2c_fd = open("/dev/i2c-1", O_RDWR);
+    if (g_i2c_fd < 0)
     {
         perror("i2cOpen");
         exit(1);
@@ -43,13 +47,13 @@ void i2cOpen()
 // close the Linux device
 void i2cClose()
 {
-    close(g_i2cFid);
+    close(g_i2c_fd);
 }
 
 // set the I2C slave address for all subsequent I2C device transfers
 void i2cSetAddress(int address)
 {
-    if (ioctl(g_i2cFid, I2C_SLAVE, address) < 0)
+    if (ioctl(g_i2c_fd, I2C_SLAVE, address) < 0)
     {
         perror("i2cSetAddress");
         exit(1);
@@ -77,7 +81,7 @@ int8_t bus_write(uint8_t reg_addr, const uint8_t *reg_data_ptr, uint32_t data_le
     for (i = 1; i < data_len + 1; i++)
         reg[i] = reg_data_ptr[i - 1];
 
-    if (write(g_i2cFid, reg, data_len + 1) != data_len + 1)
+    if (write(g_i2c_fd, reg, data_len + 1) != data_len + 1)
     {
         perror("user_i2c_write");
         rslt = 1;
@@ -104,13 +108,13 @@ int8_t bus_read(uint8_t reg_addr, uint8_t *reg_data_ptr, uint32_t data_len, void
     uint8_t reg[1];
     reg[0] = reg_addr;
 
-    if (write(g_i2cFid, reg, 1) != 1)
+    if (write(g_i2c_fd, reg, 1) != 1)
     {
         perror("user_i2c_read_reg");
         rslt = 1;
     }
 
-    if (read(g_i2cFid, reg_data_ptr, data_len) != data_len)
+    if (read(g_i2c_fd, reg_data_ptr, data_len) != data_len)
     {
         perror("user_i2c_read_data");
         rslt = 1;
@@ -166,21 +170,16 @@ int64_t get_timestamp_us()
  */
 void output_ready(output_t *outputs, bsec_library_return_t bsec_status)
 {
-    printf("IAQ: %f\n", outputs->iaq);
-    printf("IAQ ACC: %i\n", outputs->iaq_accuracy);
-    printf("IAQS: %f\n", outputs->static_iaq);
-    printf("TEMP_RAW: %f\n", outputs->raw_temp);
-    printf("HUM_RAW: %f\n", outputs->raw_humidity);
-    printf("TEMP: %f\n", outputs->temperature);
-    printf("IHUM: %f\n", outputs->humidity);
-    printf("RAW_PS: %f\n", outputs->raw_pressure);
-    printf("RAW_GAS: %f\n", outputs->raw_gas);
-    printf("GASPS: %f\n", outputs->gas_percentage);
-    printf("CO2e: %f\n", outputs->co2_equivalent);
-    printf("VOCe: %f\n", outputs->breath_voc_equivalent);
-    printf("SS: %f\n", outputs->stabStatus);
-    printf("runInStatus: %f\n", outputs->runInStatus);
-    printf("CS: %f\n", outputs->compensated_gas);
+    printf("{\"IAQ_Accuracy\": \"%d\",\"IAQ\":\"%.2f\"", outputs->iaq_accuracy, outputs->iaq);
+    printf(",\"Temperature\": \"%.2f\",\"Humidity\": \"%.2f\",\"Pressure\": \"%.2f\"", outputs->temperature,
+           outputs->humidity, outputs->raw_pressure);
+    printf(",\"Gas\": \"%.2f\"", outputs->gas_percentage);
+    printf(",\"Status\": \"%d\"", bsec_status);
+    printf(",\"Static_IAQ\": \"%.2f\"", outputs->static_iaq);
+    printf(",\"eCO2\": \"%.15f\"", outputs->co2_equivalent);
+    printf(",\"bVOCe\": \"%.25f\"}", outputs->breath_voc_equivalent);
+    printf("\r\n");
+    fflush(stdout);
 }
 
 uint32_t binary_load(uint8_t *b_buffer, uint32_t n_buffer, char *filename, uint32_t offset)

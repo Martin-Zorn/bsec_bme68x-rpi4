@@ -1,26 +1,23 @@
-import influxdb_client
+from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
+import configparser
 import json
 import subprocess
 
-bucket = "<my-bucket>"
-org = "<my-org>"
-token = "<my-token>"
-url="<my-url>"
-
-client = influxdb_client.InfluxDBClient(
-    url=url,
-    token=token,
-    org=org
-)
 
 if __name__ == "__main__":
+
+  config = configparser.ConfigParser()
+  config.read('bsec_bme68x-influx.ini')
+
+  write_client = InfluxDBClient(url=config["InfluxDB"]["url"], token=config["InfluxDB"]["token"], org=config["InfluxDB"]["org"])
+  write_api = write_client.write_api(write_options=SYNCHRONOUS)
+
   try:
     proc = subprocess.Popen(['./bsec_bme68x'], stdout=subprocess.PIPE)
 
     lineDict = {}
 
-    # now read the input
     for line in iter(proc.stdout.readline, ''):
       try:
         lineJSON = json.loads(line.decode("utf-8")) 
@@ -29,18 +26,21 @@ if __name__ == "__main__":
         print(f"Can't parse {line}, error: {e}")
         continue
 
-      print(lineDict)
+      point = (Point("air_quality")
+        .tag("device", "bme68x")
+        .field("Temperature", float(lineDict['Temperature']))
+        .field("Humidity", float(lineDict['Humidity']))
+        .field("Gas", float(lineDict['Gas']))
+        .field("Pressure", float(lineDict['Pressure']))
+        .field("IAQ_Accuracy", int(lineDict['IAQ_Accuracy']))
+        .field("IAQ", float(lineDict['IAQ']))
+        .field("Static_IAQ", float(lineDict['Static_IAQ']))
+        .field("eCO2", float(lineDict['eCO2']))
+        .field("bVOCe", float(lineDict['bVOCe']))
+        .field("Status", int(lineDict['Status']))
+      )
 
-      # listTemperature.append(float(lineDict['Temperature']))
-      # listHumidity.append(float(lineDict['Humidity']))
-      # listGas.append(int(lineDict['Gas']))
-      # listPressure.append(float(lineDict['Pressure']))
-      # listIAQ_Accuracy.append(int(lineDict['IAQ_Accuracy']))
-      # listIAQ.append(float(lineDict['IAQ']))
-      # listStatic_IAQ.append(float(lineDict['Static_IAQ']))
-      # listeCO2.append(float(lineDict['eCO2']))
-      # listbVOCe.append(float(lineDict['bVOCe']))
-      # listStatus.append(int(lineDict['Status']))
+      write_api.write(bucket=config["InfluxDB"]["bucket"], org=config["InfluxDB"]["org"], record=point)
 
   except Exception as e:
     print(e)

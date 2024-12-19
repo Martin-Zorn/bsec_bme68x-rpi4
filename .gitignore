@@ -2,3 +2,4 @@ src/*
 bsec_bme68x
 bsec_iaq.config
 bsec_iaq.state
+bsec_bme68x-influx.ini

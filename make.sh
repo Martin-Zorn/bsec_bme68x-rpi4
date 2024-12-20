@@ -19,18 +19,16 @@ if [ ! -f "${STATEFILE}" ]; then
   touch "${STATEFILE}"
 fi
 
-#echo 'Patching...'
-#dir="${BSEC_DIR}/examples/bsec_iot_example"
-#patch='patches/eCO2+bVOCe.diff'
-#if patch -N --dry-run --silent -d "${dir}/" \
-#  < "${patch}" 2>/dev/null
-#then
-#  patch -d "${dir}/" < "${patch}"
-#else
-#  echo 'Already applied.'
-#fi
-
-#EXAMPLES_DIR="/~/bme680_bsec/src/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/examples/bsec_iot_example"
+echo 'Patching...'
+dir="./src/bsec2-6-1-0_generic_release_22102024"
+patch='patches/bsec2-6-1-0.diff'
+if patch -N --dry-run --silent -d "${dir}/" \
+ < "${patch}" 2>/dev/null
+then
+ patch -d "${dir}/" < "${patch}"
+else
+ echo 'Already applied.'
+fi
 
 echo 'Compiling...'
 gcc -Wall -Wno-unused-but-set-variable -Wno-unused-variable -static \
@@ -50,5 +48,5 @@ gcc -Wall -Wno-unused-but-set-variable -Wno-unused-variable -static \
   -o bsec_bme68x
 echo 'Compiled.'
 
-cp "./src/bsec2-6-1-0_generic_release_22102024/algo/bsec_IAQ/config/bme680/bme680_iaq_33v_3s_4d/bsec_iaq.config" "${CONFIG_DIR}"/
+cp "./src/bsec2-6-1-0_generic_release_22102024/algo/bsec_IAQ/config/bme680/bme680_iaq_33v_3s_28d/bsec_iaq.config" "${CONFIG_DIR}"/
 echo 'Copied config.'

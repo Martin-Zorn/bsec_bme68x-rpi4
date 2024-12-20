@@ -1,0 +1,54 @@
+diff --git a/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/examples/bsec_iot_example/bsec_integration.c b/bsec_bme68x-rpi4/src/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/examples/bsec_iot_example/bsec_integration.c
+index aac47b5..1b6e9e3 100644
+--- a/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/examples/bsec_iot_example/bsec_integration.c
++++ b/bsec_bme68x-rpi4/src/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/examples/bsec_iot_example/bsec_integration.c
+@@ -77,7 +77,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <stdint.h>
+-
++#include <string.h>
+ #include "bsec_integration.h"
+ 
+ /**********************************************************************************************************************/
+@@ -102,8 +102,7 @@ static struct bme68x_data sensor_data[3];
+ uint8_t dev_addr = BME68X_I2C_ADDR_LOW;
+ 
+ /* State change and temporary data place holders */
+-uint8_t lastOpMode[NUM_OF_SENS] = { BME68X_SLEEP_MODE, BME68X_SLEEP_MODE, BME68X_SLEEP_MODE, BME68X_SLEEP_MODE,
+-									BME68X_SLEEP_MODE, BME68X_SLEEP_MODE, BME68X_SLEEP_MODE, BME68X_SLEEP_MODE };
++uint8_t lastOpMode[NUM_OF_SENS] = { BME68X_SLEEP_MODE};
+ 
+ float extTempOffset = 0.0f;
+ uint8_t opMode[NUM_OF_SENS];
+diff --git a/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/examples/bsec_iot_example/bsec_integration.h b/bsec_bme68x-rpi4/src/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/examples/bsec_iot_example/bsec_integration.h
+index 764686f..f01a7f2 100644
+--- a/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/examples/bsec_iot_example/bsec_integration.h
++++ b/bsec_bme68x-rpi4/src/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/examples/bsec_iot_example/bsec_integration.h
+@@ -99,7 +99,7 @@ extern "C"
+ #define CLASSIFICATION	1
+ #define REGRESSION		2
+ #define IAQ				3
+-#define OUTPUT_MODE		CLASSIFICATION
++#define OUTPUT_MODE		IAQ
+ 
+ /* Note : 
+           Set the appropriate "SAMPLE_RATE" based on configured "OUTPUT_MODE".
+@@ -110,11 +110,11 @@ extern "C"
+ #if (OUTPUT_MODE == CLASSIFICATION || OUTPUT_MODE == REGRESSION)
+ #define SAMPLE_RATE		BSEC_SAMPLE_RATE_SCAN
+ #elif (OUTPUT_MODE == IAQ)
+-#define SAMPLE_RATE		BSEC_SAMPLE_RATE_ULP
++#define SAMPLE_RATE		BSEC_SAMPLE_RATE_LP
+ #endif
+ 
+ #define BSEC_INSTANCE_SIZE  3272
+-#define NUM_OF_SENS    	    UINT8_C(8)
++#define NUM_OF_SENS    	    UINT8_C(1)
+ 
+ /*
+  *	The default offset provided has been determined by testing the sensor in LP and ULP mode on application board 3.0
+diff --git a/bsec_bme68x-rpi4/src/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/src/bme68x/bme68x.h.gch b/bsec_bme68x-rpi4/src/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/src/bme68x/bme68x.h.gch
+new file mode 100644
+index 0000000..5e38753
+Binary files /dev/null and b/bsec_bme68x-rpi4/src/bsec2-6-1-0_generic_release_22102024/examples/BSEC_Integration_Examples/src/bme68x/bme68x.h.gch differ

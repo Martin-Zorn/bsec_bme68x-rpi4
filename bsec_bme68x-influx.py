@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 import configparser
@@ -40,8 +42,10 @@ if __name__ == "__main__":
         .field("Status", int(lineDict['Status']))
       )
 
-      write_api.write(bucket=config["InfluxDB"]["bucket"], org=config["InfluxDB"]["org"], record=point)
+      try:
+        write_api.write(bucket=config["InfluxDB"]["bucket"], org=config["InfluxDB"]["org"], record=point)
+      except Exception as e:
+        print(f"Can't write to InfluxDB, error: {e}")
 
   except Exception as e:
-    print(e)
-
+    print(f"Can't start bsec_bme68x, error: {e}")

@@ -22,9 +22,9 @@
 /**********************************************************************************************************************/
 
 int g_i2c_fd;
-int i2c_address = 0x77;
-char *filename_state = "bsec_iaq.state";
-char *filename_config = "bsec_iaq.config";
+int g_i2c_address = 0x77;
+char *g_filename_state = "bsec_iaq.state";
+char *g_filename_config = "bsec_iaq.config";
 
 uint32_t overflowCounter;
 uint32_t lastTimeMS;
@@ -234,7 +234,7 @@ uint32_t binary_load(uint8_t *b_buffer, uint32_t n_buffer, char *filename, uint3
 uint32_t state_load(uint8_t *state_buffer, uint32_t n_buffer)
 {
     int32_t rslt = 0;
-    rslt = binary_load(state_buffer, n_buffer, filename_state, 0);
+    rslt = binary_load(state_buffer, n_buffer, g_filename_state, 0);
     return rslt;
 }
 
@@ -249,7 +249,7 @@ uint32_t state_load(uint8_t *state_buffer, uint32_t n_buffer)
 void state_save(const uint8_t *state_buffer, uint32_t length)
 {
     FILE *state_w_ptr;
-    state_w_ptr = fopen(filename_state, "wb");
+    state_w_ptr = fopen(g_filename_state, "wb");
     fwrite(state_buffer, length, 1, state_w_ptr);
     fclose(state_w_ptr);
 }
@@ -270,7 +270,7 @@ uint32_t config_load(uint8_t *config_buffer, uint32_t n_buffer)
      * Apparently skipping the first 4 bytes works fine.
      *
      */
-    rslt = binary_load(config_buffer, n_buffer, filename_config, 4);
+    rslt = binary_load(config_buffer, n_buffer, g_filename_config, 4);
     return rslt;
 }
 
@@ -283,7 +283,7 @@ uint32_t config_load(uint8_t *config_buffer, uint32_t n_buffer)
 void setup()
 {
     i2cOpen();
-    i2cSetAddress(i2c_address);
+    i2cSetAddress(g_i2c_address);
 
     struct bme68x_dev bme_dev[NUM_OF_SENS];
     return_values_init ret;
@@ -334,8 +334,19 @@ void loop()
     bsec_iot_loop(sleep_n, get_timestamp_us, output_ready, state_save, 10000);
 }
 
-int main()
+int main(int argc, char** argv)
 {
+    if(argc > 1)
+    {
+        g_filename_state = argv[0];
+        g_filename_config = argv[1];
+    }
+
+    if(argc > 2)
+    {
+        g_i2c_address = atoi(argv[2]);
+    }
+
     setup();
     loop();
 }

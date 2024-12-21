@@ -5,19 +5,26 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 import configparser
 import json
 import subprocess
+import sys
 
 
 if __name__ == "__main__":
-
   config = configparser.ConfigParser()
-  config.read('bsec_bme68x-influx.ini')
+
+  if(len(sys.argv) > 0):
+    config.read(sys.argv[0])
+  else:
+    config.read('bsec_bme68x-influx.ini')
 
   write_client = InfluxDBClient(url=config["InfluxDB"]["url"], token=config["InfluxDB"]["token"], org=config["InfluxDB"]["org"])
   write_api = write_client.write_api(write_options=SYNCHRONOUS)
 
   try:
-    proc = subprocess.Popen(['./bsec_bme68x'], stdout=subprocess.PIPE)
-
+    if(len(sys.argv) > 0):
+      proc = subprocess.Popen(['./bsec_bme68x /var/opt/bsec_bme68x/bsec_iaq.state /etc/bsec_bme68x/bsec_iaq.config'], stdout=subprocess.PIPE)
+    else:
+      proc = subprocess.Popen(['./bsec_bme68x'], stdout=subprocess.PIPE)
+      
     lineDict = {}
 
     for line in iter(proc.stdout.readline, ''):

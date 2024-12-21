@@ -17,7 +17,7 @@ fi
 echo 'Patching...'
 patch=patches/${DIFF_FILE}
 if  patch -N --dry-run --silent ${BSEC_DIR}/examples/BSEC_Integration_Examples/examples/bsec_iot_example/bsec_integration.h \
-    < "${patch}" 2>/dev/null
+    < "${patch}" >/dev/null
 then
   echo 'Applying patch...'
   patch ${BSEC_DIR}/examples/BSEC_Integration_Examples/examples/bsec_iot_example/bsec_integration.h < ${patch}

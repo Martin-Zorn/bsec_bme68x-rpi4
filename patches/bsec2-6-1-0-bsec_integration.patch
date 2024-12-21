@@ -1,0 +1,16 @@
+84c84
+< 
+---
+> #include <string.h>
+102c102
+< #define OUTPUT_MODE		CLASSIFICATION
+---
+> #define OUTPUT_MODE		IAQ
+113c113
+< #define SAMPLE_RATE		BSEC_SAMPLE_RATE_ULP
+---
+> #define SAMPLE_RATE		BSEC_SAMPLE_RATE_LP
+117c117
+< #define NUM_OF_SENS    	    UINT8_C(8)
+---
+> #define NUM_OF_SENS    	    UINT8_C(1)
